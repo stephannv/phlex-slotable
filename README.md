@@ -6,20 +6,20 @@ Phlex::Slotable enables slots feature to Phlex views. Inspired by ViewComponent.
 
 Install the gem and add to the application's Gemfile by executing:
 
-    $ bundle add UPDATE_WITH_YOUR_GEM_NAME_IMMEDIATELY_AFTER_RELEASE_TO_RUBYGEMS_ORG
+    $ bundle add phlex-slotable
 
 If bundler is not being used to manage dependencies, install the gem by executing:
 
-    $ gem install UPDATE_WITH_YOUR_GEM_NAME_IMMEDIATELY_AFTER_RELEASE_TO_RUBYGEMS_ORG
+    $ gem install phlex-slotable
 
 ## Usage
 
 #### Basic
 
-Include `Phlex::Slotable` to your Phlex view and use `slot` class method to define slots.
+To incorportate slots into your Phlex views, include `Phlex::Slotable` and utilize `slot` class method to define them.
 
-- `slot :slot_name` defines a single slot that will be rendered at most once per component
-- `slot :slot_name, many: true` defines a slot that can be rendered multiple times per component
+- `slot :slot_name` declaration establishes a single slot intended for rendering once within a view
+- `slot :slot_name, many: true` denotes a slot capable of being rendered multiple times within a view
 
 ```ruby
 class BlogComponent < Phlex::HTML
@@ -32,9 +32,9 @@ class BlogComponent < Phlex::HTML
 end
 ```
 
-To render a single slot, render `{slot_name}_slot`, eg. `render header_slot`.
+To render a single slot, utilize the  `{slot_name}_slot` method. For example, you can render the `header_slot` using `render header_slot`.
 
-To render a multi slot, iterate over `{slot_name}_slots` and render each element, eg. `post_slots.each { |s| render s }`
+For multi-slot rendering, iterate over the `{slot_name}_slots` collection and and render each slot individually, eg. `post_slots.each { |s| render s }`.
 
 ```ruby
 class BlogComponent < Phlex::HTML
@@ -44,11 +44,11 @@ class BlogComponent < Phlex::HTML
   slot :post, many: true
 
   def template
-  	div id: "header" do
+    div id: "header" do
       render header_slot
     end
 
-		div id: "main" do
+    div id: "main" do
       post_slots.each do |slot|
         p { render slot }
       end
@@ -59,7 +59,7 @@ class BlogComponent < Phlex::HTML
 end
 ```
 
-To set slot content, you need to use `with_{slot_name}` when rendering the view:
+When setting slot content, ensure to utilize the  `with_{slot_name}` method while rendering the view:
 
 ```ruby
 class MyPage < Phlex::HTML
@@ -96,7 +96,7 @@ This will output:
 
 #### Predicate methods
 
-You can check if a slot has been passed to the component using `{slot_name}_slot?` when it is a single slot, or `{slot_name}_slots?` when it is a multi slot.
+You can verify whether a slot has been provided to the view using `{slot_name}_slot?` for single slots or `{slot_name}_slots?` when for multi-slots.
 
 ```ruby
 class BlogComponent < Phlex::HTML
@@ -106,13 +106,13 @@ class BlogComponent < Phlex::HTML
   slot :post, many: true
 
   def template
-  	if header_slot?
+    if header_slot?
       div id: "header" do
         render header_slot
       end
     end
 
-		div id: "main" do
+    div id: "main" do
       if post_slots?
         post_slots.each do |slot|
           p { render slot }
@@ -129,11 +129,11 @@ end
 
 #### View slot
 
-Slots can render other views, you just need to pass the view class name to `slot` method.
+Slots have the capability to render other views, Simply pass the view class name to the `slot` method.
 
 ```ruby
 class HeaderComponent < Phlex::HTML
-	def initialize(size:)
+  def initialize(size:)
     @size = size
   end
 
@@ -143,7 +143,7 @@ class HeaderComponent < Phlex::HTML
 end
 
 class PostComponent < Phlex::HTML
-	def initialize(featured:)
+  def initialize(featured:)
     @featured = featured
   end
 
@@ -159,13 +159,13 @@ class BlogComponent < Phlex::HTML
   slot :post, PostComponent, many: true
 
   def template
-  	if header_slot?
+    if header_slot?
       div id: "header" do
         render header_slot
       end
     end
 
-		div id: "main" do
+    div id: "main" do
       if post_slots?
         post_slots.each { render slot }
 
