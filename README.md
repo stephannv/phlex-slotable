@@ -1,6 +1,6 @@
 # Phlex::Slotable
 
-Phlex::Slotable enables slots feature to Phlex views. Inspired by ViewComponent.
+Phlex::Slotable enables slots feature to [Phlex](https://www.phlex.fun/) views. Inspired by ViewComponent.
 
 ## Installation
 
