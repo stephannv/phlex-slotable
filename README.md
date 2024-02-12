@@ -208,10 +208,9 @@ The output:
 ```
 
 ## Roadmap
-
-[] Accepts Strings as view class name
-[] Allow lambda slots
-[] Allow polymorphic slots
+- Accepts Strings as view class name
+- Allow lambda slots
+- Allow polymorphic slots
 
 ## Development
 
