@@ -12,60 +12,80 @@ module Phlex
       def slot(slot_name, callable = nil, many: false)
         include Phlex::DeferredRender
 
-        if callable.is_a?(Proc)
-          define_method :"__call_#{slot_name}__", &callable
-          private :"__call_#{slot_name}__"
+        define_setter_method(slot_name, callable, many: many)
+        define_lambda_method(slot_name, callable) if callable.is_a?(Proc)
+        define_predicate_method(slot_name, many: many)
+        define_getter_method(slot_name, many: many)
+      end
+
+      private
+
+      def define_setter_method(slot_name, callable, many:)
+        setter_method = if many
+          <<-RUBY
+            def with_#{slot_name}(*args, **kwargs, &block)
+              @#{slot_name}_slots ||= []
+              @#{slot_name}_slots << #{callable_value(slot_name, callable)}
+            end
+          RUBY
+        else
+          <<-RUBY
+            def with_#{slot_name}(*args, **kwargs, &block)
+              @#{slot_name}_slot = #{callable_value(slot_name, callable)}
+            end
+          RUBY
         end
 
-        if many
-          define_method :"with_#{slot_name}" do |*args, **kwargs, &block|
-            instance_variable_set(:"@#{slot_name}_slots", []) unless instance_variable_defined?(:"@#{slot_name}_slots")
+        class_eval(setter_method, __FILE__, __LINE__ + 1)
+      end
 
-            value = case callable
-            when nil
-              block
-            when String
-              self.class.const_get(callable).new(*args, **kwargs, &block)
-            when Proc
-              -> { self.class.instance_method(:"__call_#{slot_name}__").bind_call(self, *args, **kwargs, &block) }
-            else
-              callable.new(*args, **kwargs, &block)
+      def define_lambda_method(slot_name, callable)
+        define_method :"__call_#{slot_name}__", &callable
+        private :"__call_#{slot_name}__"
+      end
+
+      def define_getter_method(slot_name, many:)
+        getter_method = if many
+          <<-RUBY
+            def #{slot_name}_slots
+              @#{slot_name}_slots ||= []
             end
-
-            instance_variable_get(:"@#{slot_name}_slots") << value
-          end
-
-          define_method :"#{slot_name}_slots?" do
-            !send(:"#{slot_name}_slots").empty?
-          end
-          private :"#{slot_name}_slots?"
-
-          define_method :"#{slot_name}_slots" do
-            instance_variable_get(:"@#{slot_name}_slots") || instance_variable_set(:"@#{slot_name}_slots", [])
-          end
-          private :"#{slot_name}_slots"
+            private :#{slot_name}_slots
+          RUBY
         else
-          define_method :"with_#{slot_name}" do |*args, **kwargs, &block|
-            value = case callable
-            when nil
-              block
-            when String
-              self.class.const_get(callable).new(*args, **kwargs, &block)
-            when Proc
-              -> { self.class.instance_method(:"__call_#{slot_name}__").bind_call(self, *args, **kwargs, &block) }
-            else
-              callable.new(*args, **kwargs, &block)
-            end
+          <<-RUBY
+            def #{slot_name}_slot = @#{slot_name}_slot
+            private :#{slot_name}_slot
+          RUBY
+        end
 
-            instance_variable_set(:"@#{slot_name}_slot", value)
-          end
+        class_eval(getter_method, __FILE__, __LINE__ + 1)
+      end
 
-          define_method :"#{slot_name}_slot?" do
-            !instance_variable_get(:"@#{slot_name}_slot").nil?
-          end
-          private :"#{slot_name}_slot?"
+      def define_predicate_method(slot_name, many:)
+        predicate_method = if many
+          <<-RUBY
+            def #{slot_name}_slots? = #{slot_name}_slots.any?
+            private :#{slot_name}_slots?
+          RUBY
+        else
+          <<-RUBY
+            def #{slot_name}_slot? = !#{slot_name}_slot.nil?
+            private :#{slot_name}_slot?
+          RUBY
+        end
 
-          attr_reader :"#{slot_name}_slot"
+        class_eval(predicate_method, __FILE__, __LINE__ + 1)
+      end
+
+      def callable_value(slot_name, callable)
+        case callable
+        when nil
+          %(block)
+        when Proc
+          %(-> { self.class.instance_method(:"__call_#{slot_name}__").bind_call(self, *args, **kwargs, &block) })
+        else
+          %(#{callable}.new(*args, **kwargs, &block))
         end
       end
     end
