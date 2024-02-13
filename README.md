@@ -207,6 +207,24 @@ The output:
 </div>
 ```
 
+You can pass the class name as a string for cases where the class isn't evaluated yet, such as with inner classes. For example:
+```ruby
+class BlogComponent < Phlex::HTML
+  include Phlex::Slotable
+
+  # This will not work
+  slot :header, HeaderComponent #  uninitialized constant BlogComponent::HeaderComponent
+  # You should do this
+  slot :header, "HeaderComponent"
+
+  private
+
+  class HeaderComponent < Phlex::HTML
+    # ...
+  end
+end
+```
+
 ## Roadmap
 
 [] Accepts Strings as view class name
