@@ -19,6 +19,8 @@ module Phlex
             value = case callable
             when nil
               block
+            when String
+              self.class.const_get(callable).new(*args, **kwargs, &block)
             else
               callable.new(*args, **kwargs, &block)
             end
@@ -40,6 +42,8 @@ module Phlex
             value = case callable
             when nil
               block
+            when String
+              self.class.const_get(callable).new(*args, **kwargs, &block)
             else
               callable.new(*args, **kwargs, &block)
             end
