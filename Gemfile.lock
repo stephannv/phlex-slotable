@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    phlex-slotable (0.1.0)
+    phlex-slotable (0.2.0)
       phlex (>= 1.9)
 
 GEM
