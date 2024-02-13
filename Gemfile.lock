@@ -8,6 +8,7 @@ GEM
   remote: https://rubygems.org/
   specs:
     ast (2.4.2)
+    benchmark-ips (2.13.0)
     cgi (0.4.1)
     concurrent-ruby (1.2.3)
     erb (4.0.4)
@@ -66,6 +67,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  benchmark-ips
   minitest (~> 5.16)
   phlex-slotable!
   rake (~> 13.0)
