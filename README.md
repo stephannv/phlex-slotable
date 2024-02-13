@@ -228,10 +228,55 @@ class BlogComponent < Phlex::HTML
 end
 ```
 
+#### Lambda slots
+Lambda slots are valuable when you prefer not to create another component for straightforward structures or when you need to render another view with specific parameters
+```ruby
+
+class BlogComponent < Phlex::HTML
+  include Phlex::Slotable
+
+  slot :header, ->(size:, &content) { render HeaderComponent.new(size: size, color: "blue"), &content }
+  slot :post, ->(featured:, &content) { span(class: featured ? "featured" : nil, &content) }, many: true
+end
+
+class MyPage < Phlex::HTML
+  def template
+    render BlogComponent.new do |blog|
+      blog.with_header(size: :lg) { "Hello World!" }
+
+      blog.with_post(featured: true) { "Post A" }
+      blog.with_post { "Post B" }
+      blog.with_post { "Post C" }
+    end
+  end
+end
+```
+
+You can access the internal view state within lambda slots.For example:
+```ruby
+class BlogComponent < Phlex::HTML
+  include Phlex::Slotable
+
+  slot :header, ->(size:, &content) { render HeaderComponent.new(size: size, color: @header_color), &content }
+
+  def initialize(header_color:)
+    @header_color = header_color
+  end
+end
+
+class MyPage < Phlex::HTML
+  def template
+    render BlogComponent.new(header_color: "red") do |blog|
+      blog.with_header(size: :lg) { "Hello World!" }
+    end
+  end
+end
+```
+
 ## Roadmap
-- Accepts Strings as view class name
-- Allow lambda slots
-- Allow polymorphic slots
+- ✅ ~~Accept Strings as view class name~~
+- ✅ ~~Allow lambda slots~~
+- 🕐 Allow polymorphic slots
 
 ## Development
 

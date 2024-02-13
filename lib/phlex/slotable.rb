@@ -12,6 +12,11 @@ module Phlex
       def slot(slot_name, callable = nil, many: false)
         include Phlex::DeferredRender
 
+        if callable.is_a?(Proc)
+          define_method :"__call_#{slot_name}__", &callable
+          private :"__call_#{slot_name}__"
+        end
+
         if many
           define_method :"with_#{slot_name}" do |*args, **kwargs, &block|
             instance_variable_set(:"@#{slot_name}_slots", []) unless instance_variable_defined?(:"@#{slot_name}_slots")
@@ -21,6 +26,8 @@ module Phlex
               block
             when String
               self.class.const_get(callable).new(*args, **kwargs, &block)
+            when Proc
+              -> { self.class.instance_method(:"__call_#{slot_name}__").bind_call(self, *args, **kwargs, &block) }
             else
               callable.new(*args, **kwargs, &block)
             end
@@ -44,6 +51,8 @@ module Phlex
               block
             when String
               self.class.const_get(callable).new(*args, **kwargs, &block)
+            when Proc
+              -> { self.class.instance_method(:"__call_#{slot_name}__").bind_call(self, *args, **kwargs, &block) }
             else
               callable.new(*args, **kwargs, &block)
             end
