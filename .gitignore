@@ -6,6 +6,7 @@
 /pkg/
 /spec/reports/
 /tmp/
+Gemfile.lock
 
 # Mac OS files
 .DS_Store
