@@ -1,5 +1,10 @@
 ## [Unreleased]
 
+## [0.3.1] - 2024-02-14
+- Support Ruby 2.7
+
+  *stephannv*
+
 ## [0.3.0] - 2024-02-14
 
 - Match Slotable peformance with DeferredRender
