@@ -62,7 +62,9 @@ module Phlex
           RUBY
         else
           <<-RUBY
-            def #{slot_name}_slot = @#{slot_name}_slot
+            def #{slot_name}_slot
+              @#{slot_name}_slot
+            end
             private :#{slot_name}_slot
           RUBY
         end
@@ -73,12 +75,16 @@ module Phlex
       def define_predicate_method(slot_name, many:)
         predicate_method = if many
           <<-RUBY
-            def #{slot_name}_slots? = #{slot_name}_slots.any?
+            def #{slot_name}_slots?
+              #{slot_name}_slots.any?
+            end
             private :#{slot_name}_slots?
           RUBY
         else
           <<-RUBY
-            def #{slot_name}_slot? = !#{slot_name}_slot.nil?
+            def #{slot_name}_slot?
+              !#{slot_name}_slot.nil?
+            end
             private :#{slot_name}_slot?
           RUBY
         end

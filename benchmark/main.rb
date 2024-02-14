@@ -102,4 +102,5 @@ puts
 Benchmark.ips do |x|
   x.report("Deferred") { DeferredListExample.new.call }
   x.report("Slotable") { SlotableListExample.new.call }
+  x.compare!
 end
