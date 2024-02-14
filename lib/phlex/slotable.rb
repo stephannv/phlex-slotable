@@ -9,34 +9,42 @@ module Phlex
     end
 
     module ClassMethods
-      def slot(slot_name, callable = nil, many: false)
+      def slot(slot_name, callable = nil, types: nil, many: false)
         include Phlex::DeferredRender
 
-        define_setter_method(slot_name, callable, many: many)
-        define_lambda_method(slot_name, callable) if callable.is_a?(Proc)
+        if types
+          types.each do |type, callable|
+            define_setter_method(slot_name, callable, many: many, type: type)
+          end
+        else
+          define_setter_method(slot_name, callable, many: many)
+        end
         define_predicate_method(slot_name, many: many)
         define_getter_method(slot_name, many: many)
       end
 
       private
 
-      def define_setter_method(slot_name, callable, many:)
+      def define_setter_method(slot_name, callable, many:, type: nil)
+        slot_name_with_type = type ? "#{type}_#{slot_name}" : slot_name
+
         setter_method = if many
           <<-RUBY
-            def with_#{slot_name}(*args, **kwargs, &block)
+            def with_#{slot_name_with_type}(*args, **kwargs, &block)
               @#{slot_name}_slots ||= []
-              @#{slot_name}_slots << #{callable_value(slot_name, callable)}
+              @#{slot_name}_slots << #{callable_value(slot_name_with_type, callable)}
             end
           RUBY
         else
           <<-RUBY
-            def with_#{slot_name}(*args, **kwargs, &block)
-              @#{slot_name}_slot = #{callable_value(slot_name, callable)}
+            def with_#{slot_name_with_type}(*args, **kwargs, &block)
+              @#{slot_name}_slot = #{callable_value(slot_name_with_type, callable)}
             end
           RUBY
         end
 
         class_eval(setter_method, __FILE__, __LINE__ + 1)
+        define_lambda_method(slot_name_with_type, callable) if callable.is_a?(Proc)
       end
 
       def define_lambda_method(slot_name, callable)

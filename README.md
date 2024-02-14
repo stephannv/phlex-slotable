@@ -252,7 +252,7 @@ class MyPage < Phlex::HTML
 end
 ```
 
-You can access the internal view state within lambda slots.For example:
+You can access the internal view state within lambda slots. For example:
 ```ruby
 class BlogComponent < Phlex::HTML
   include Phlex::Slotable
@@ -273,10 +273,84 @@ class MyPage < Phlex::HTML
 end
 ```
 
+#### Polymorphic slots
+Polymorphic slots can render one of several possible slots, allowing for flexibility in component content. This feature is particularly useful when you require a fixed structure but need to accommodate different types of content. To implement this, simply pass a types hash containing the types along with corresponding slot definitions.
+
+```ruby
+class CardComponent < Phlex::HTML
+  include Phlex::Slotable
+
+  slot :avatar, types: { icon: IconComponent, image: ImageComponent }
+
+  def template
+    if avatar_slot?
+      figure id: "avatar" do
+        render avatar_slot
+      end
+    end
+  end
+end
+```
+
+This allows you to set the icon slot using `with_icon_avatar` or the image slot using `with_image_avatar`:
+```ruby
+class UserCardComponent < Phlex::HTML
+  def initialize(user:)
+    @user = user
+  end
+
+  def template
+    render CardComponent.new do |card|
+      if @user.image?
+        card.with_image_avatar(src: @user.image)
+      else
+        card.with_icon_avatar(name: :user)
+      end
+    end
+  end
+end
+```
+
+Please note that you can still utilize the other slot definition APIs:
+```ruby
+class CardComponent < Phlex::HTML
+  include Phlex::Slotable
+
+  slot :avatar, types: {
+    icon: IconComponent,
+    image: "ImageComponent",
+    text: ->(size:, &content) { span(class: "text-#{size}", &content) }
+  }, many: true
+
+  def template
+    if avatar_slots?
+      avatar_slots.each do |slot|
+        render slot
+      end
+    end
+
+    span { "Count: #{avatar_slots.size}" }
+  end
+
+  ...
+end
+
+class UsersCardComponent < Phlex::HTML
+  def template
+    render CardComponent.new do |card|
+      card.with_image_avatar(src: @user.image)
+      card.with_icon_avatar(name: :user)
+      card.with_text_avatar(size: :lg) { "SV" }
+    end
+  end
+end
+```
+
+
 ## Roadmap
 - ✅ ~~Accept Strings as view class name~~
 - ✅ ~~Allow lambda slots~~
-- 🕐 Allow polymorphic slots
+- ✅ ~~Allow polymorphic slots~~
 
 ## Development
 
