@@ -98,7 +98,7 @@ module Phlex
         when nil
           %(block)
         when Proc
-          %(-> { self.class.instance_method(:"__call_#{slot_name}__").bind_call(self, *args, **kwargs, &block) })
+          %(-> { __call_#{slot_name}__(*args, **kwargs, &block) })
         else
           %(#{callable}.new(*args, **kwargs, &block))
         end
