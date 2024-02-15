@@ -6,7 +6,7 @@ class Phlex::TestMultiSlotWithString < Minitest::Test
   class Blog < Phlex::HTML
     include Phlex::Slotable
 
-    slot :post, "PostComponent", many: true
+    slot :post, "PostComponent", collection: true
 
     def template
       if post_slots?

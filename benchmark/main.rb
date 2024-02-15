@@ -34,7 +34,7 @@ class SlotableList < Phlex::HTML
   include Phlex::Slotable
 
   slot :header
-  slot :item, many: true
+  slot :item, collection: true
 
   def template
     if header_slot

@@ -9,26 +9,26 @@ module Phlex
     end
 
     module ClassMethods
-      def slot(slot_name, callable = nil, types: nil, many: false)
+      def slot(slot_name, callable = nil, types: nil, collection: false)
         include Phlex::DeferredRender
 
         if types
           types.each do |type, callable|
-            define_setter_method(slot_name, callable, many: many, type: type)
+            define_setter_method(slot_name, callable, collection: collection, type: type)
           end
         else
-          define_setter_method(slot_name, callable, many: many)
+          define_setter_method(slot_name, callable, collection: collection)
         end
-        define_predicate_method(slot_name, many: many)
-        define_getter_method(slot_name, many: many)
+        define_predicate_method(slot_name, collection: collection)
+        define_getter_method(slot_name, collection: collection)
       end
 
       private
 
-      def define_setter_method(slot_name, callable, many:, type: nil)
+      def define_setter_method(slot_name, callable, collection:, type: nil)
         slot_name_with_type = type ? "#{type}_#{slot_name}" : slot_name
 
-        setter_method = if many
+        setter_method = if collection
           <<-RUBY
             def with_#{slot_name_with_type}(*args, **kwargs, &block)
               @#{slot_name}_slots ||= []
@@ -52,8 +52,8 @@ module Phlex
         private :"__call_#{slot_name}__"
       end
 
-      def define_getter_method(slot_name, many:)
-        getter_method = if many
+      def define_getter_method(slot_name, collection:)
+        getter_method = if collection
           <<-RUBY
             def #{slot_name}_slots
               @#{slot_name}_slots ||= []
@@ -72,8 +72,8 @@ module Phlex
         class_eval(getter_method, __FILE__, __LINE__ + 1)
       end
 
-      def define_predicate_method(slot_name, many:)
-        predicate_method = if many
+      def define_predicate_method(slot_name, collection:)
+        predicate_method = if collection
           <<-RUBY
             def #{slot_name}_slots?
               #{slot_name}_slots.any?
