@@ -27,17 +27,18 @@ module Phlex
 
       def define_setter_method(slot_name, callable, collection:, type: nil)
         slot_name_with_type = type ? "#{type}_#{slot_name}" : slot_name
+        signature = callable.nil? ? "(&block)" : "(*args, **kwargs, &block)"
 
         setter_method = if collection
           <<-RUBY
-            def with_#{slot_name_with_type}(*args, **kwargs, &block)
+            def with_#{slot_name_with_type}#{signature}
               @#{slot_name}_slots ||= []
               @#{slot_name}_slots << #{callable_value(slot_name_with_type, callable)}
             end
           RUBY
         else
           <<-RUBY
-            def with_#{slot_name_with_type}(*args, **kwargs, &block)
+            def with_#{slot_name_with_type}#{signature}
               @#{slot_name}_slot = #{callable_value(slot_name_with_type, callable)}
             end
           RUBY
