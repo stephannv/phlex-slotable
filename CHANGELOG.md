@@ -1,5 +1,14 @@
 ## [Unreleased]
 
+## [0.4.0] - 2024-02-14
+- [BREAKING CHANGE] Rename `many` option to `collection`.
+
+  *stephannv*
+
+- Improve generic slot performance
+
+  *stephannv*
+
 ## [0.3.1] - 2024-02-14
 - Support Ruby 2.7
 
