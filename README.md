@@ -6,7 +6,21 @@
 
 Phlex::Slotable enables slots feature to [Phlex](https://www.phlex.fun/) views. Inspired by ViewComponent.
 
-## Installation
+- [What is a slot?](#what-is-a-slot)
+- [Getting started](#getting-started)
+- [Generic slot](#generic-slot)
+- [Slot collection](#slot-collection)
+- [Component slot](#component-slot)
+- [Lambda slot](#lambda-slot)
+- [Polymorphic slot](#polymorphic-slot)
+- [Development](#development)
+- [Contributing](#contributing)
+
+## What is a slot?
+
+In the context of view components, a **slot** serves as a  placeholder inside a component that can be filled with custom content.  Essentially, slots enable a component to accept external content and  autonomously organize it within its structure. This abstraction allows developers to work with components without needing to understand their internals, thereby ensuring visual consistency and improving developer experience.
+
+## Getting started
 
 Install the gem and add to the application's Gemfile by executing:
 
@@ -16,268 +30,272 @@ If bundler is not being used to manage dependencies, install the gem by executin
 
     $ gem install phlex-slotable
 
-## Usage
+> [!TIP]
+> If you prefer not to add another dependency to your project, you can simply copy the [Phlex::Slotable](https://github.com/stephannv/phlex-slotable/blob/main/lib/phlex/slotable.rb) file into your project.
 
-#### Basic
-
-To incorportate slots into your Phlex views, include `Phlex::Slotable` and utilize `slot` class method to define them.
-
-- `slot :slot_name` declaration establishes a single slot intended for rendering once within a view
-- `slot :slot_name, many: true` denotes a slot capable of being rendered multiple times within a view
+Afterward, simply include `Phlex::Slotable` into your Phlex component and utilize `slot` macro to define the component's slots. For example:
 
 ```ruby
-class BlogComponent < Phlex::HTML
+class MyComponent < Phlex::HTML
   include Phlex::Slotable
 
-  slot :header
-  slot :post, many: true
-
-  # ...
+  slot :my_slot
 end
 ```
 
-To render a single slot, utilize the  `{slot_name}_slot` method. For example, you can render the `header_slot` using `render header_slot`.
+Below, you will find a more detailed explanation of how to use the `slot` API.
 
-For multi-slot rendering, iterate over the `{slot_name}_slots` collection and and render each slot individually, eg. `post_slots.each { |s| render s }`.
+## Generic slot
+
+Any content can be passed to components through generic slots, also known as passthrough slots. To define a generic slot, use `slot :{slot_name}`. For example:
 
 ```ruby
-class BlogComponent < Phlex::HTML
+class PageComponent < Phlex::HTML
   include Phlex::Slotable
 
-  slot :header
-  slot :post, many: true
+  slot :title
+end
+```
+
+To render a slot, render the `{slot_name}_slot`:
+
+```ruby
+class PageComponent < Phlex::HTML
+  include Phlex::Slotable
+
+  slot :title
+
+  def template
+    header { render title_slot }
+  end
+end
+```
+
+To pass content to the component's slot, you should use `with_{slot_name}`:
+
+```ruby
+PageComponent.new.call do |page|
+  page.with_title do
+    h1 { "Hello World!" }
+  end
+end
+```
+
+Returning:
+
+```html
+<header>
+	<h1>Hello World!</h1>
+</header>
+```
+
+You can test if a slot has been passed to the component with `{slot_name}_slot?` method. For example:
+
+```ruby
+class PageComponent < Phlex::HTML
+  include Phlex::Slotable
+
+  slot :title
+
+  def template
+		if header_slot?
+      header { render title_slot }
+    else
+      plain "No title"
+    end
+  end
+end
+```
+
+## Slot collection
+
+A slot collection denotes a slot capable of being rendered multiple times within a component. It has some minor differences compared to a single slot seen previously. First, you should pass `collection: true` when defining the slot:
+
+```ruby
+class ListComponent < Phlex::HTML
+	include Phlex::Slotable
+
+  slot :item, collection: true
+end
+```
+
+To render a collection of slots, iterate over the `{slot_name}_slots` collection and render each slot individually:
+
+```ruby
+class ListComponent < Phlex::HTML
+	include Phlex::Slotable
+
+  slot :item, collection: true
+
+  def template
+    if item_slots?
+      ul do
+        item_slots.each do |item_slot|
+          li { render item_slot }
+        end
+      end
+    end
+
+    span { "Total: #{item_slots.size}" }
+  end
+end
+```
+
+To set slot content, use the `with_{slot_name}` method when rendering the component. Unlike the single slot,  `with_{slot_name}` can be called multiple times:
+
+```ruby
+ListComponent.new.call do |list|
+  list.with_item { "Item A" }
+  list.with_item { "Item B" }
+  list.with_item { "Item C" }
+end
+```
+
+Returning:
+
+```html
+<ul>
+  <li>Item A</li>
+  <li>Item B</li>
+  <li>Item C</li>
+</ul>
+
+<span>Total: 3</span>
+```
+
+## Component slot
+
+Slots have the capability to render other components. When defining a slot, provide the name of a component class as the second argument to define a component slot
+
+```ruby
+class ListHeaderComponent < Phlex::HTML
+  # omitted code
+end
+
+class ListItemComponent < Phlex::HTML
+  # omitted code
+end
+
+class ListComponent < Phlex::HTML
+  include Phlex::Slotable
+
+  slot :header, ListHeaderComponent
+  slot :item, ListItemComponent, collection: true
 
   def template
     div id: "header" do
-      render header_slot
+      render header_slot if header_slot?
     end
 
-    div id: "main" do
-      post_slots.each do |slot|
-        p { render slot }
-      end
-
-      span { "Count: #{post_slots.count}" }
-    end
-  end
-end
-```
-
-When setting slot content, ensure to utilize the  `with_{slot_name}` method while rendering the view:
-
-```ruby
-class MyPage < Phlex::HTML
-  def template
-    render BlogComponent.new do |blog|
-      blog.with_header do
-        h1 { "Hello World!" }
-      end
-
-      blog.with_post { "Post A" }
-      blog.with_post { "Post B" }
-      blog.with_post { "Post C" }
+    ul do
+      item_slots.each { |slot| render slot }
     end
   end
 end
 
-MyPage.new.call
+ListComponent.new.call do |list|
+  list.with_header(size: "lg") { "Hello World!" }
+
+  list.with_item(active: true) { "Item A" }
+  list.with_item { "Item B" }
+  list.with_item { "Item C" }
+end
 ```
 
-This will output:
+Returning:
 
 ```html
 <div id="header">
-  <h1>Hello World</h1>
-</div>
-<div id="main">
-  <p>Post A</p>
-  <p>Post B</p>
-  <p>Post C</p>
+  <h1 class="text-lg">Hello World!</h1>
 
-  <span>Count: 3</span>
+  <ul>
+    <li class="active">Item A</li>
+  	<li>Item B</li>
+	  <li>Item C</li>
+  </ul>
 </div>
 ```
 
-#### Predicate methods
+> [!TIP]
+> You can also pass the component class as a string if your component class hasn't been defined yet. For example:
+>
+> ```ruby
+> slot :header, "HeaderComponent"
+> slot :item, "ItemComponent", collection: true
+>```
 
-You can verify whether a slot has been provided to the view using `{slot_name}_slot?` for single slots or `{slot_name}_slots?` when for multi-slots.
+
+## Lambda slot
+
+Lambda slots are valuable when you prefer not to create another component for straightforward structures or when you need to render another component with specific parameters.
 
 ```ruby
-class BlogComponent < Phlex::HTML
+class ListComponent < Phlex::HTML
   include Phlex::Slotable
 
-  slot :header
-  slot :post, many: true
+  slot :header, ->(size:, &content) do
+    render HeaderComponent.new(size: size, color: "primary")
+	end
+  slot :item, ->(href:, &content) { li { a(href: href, &content) } }, collection: true
 
   def template
-    if header_slot?
-      div id: "header" do
-        render header_slot
-      end
+    div id: "header" do
+      render header_slot if header_slot?
     end
 
-    div id: "main" do
-      if post_slots?
-        post_slots.each do |slot|
-          p { render slot }
-        end
-
-        span { "Count: #{post_slots.count}" }
-      else
-        span { "No post yet" }
-      end
+    ul do
+      item_slots.each { |slot| render slot }
     end
   end
+end
+
+ListComponent.new.call do |list|
+  list.with_header(size: "lg") { "Hello World!" }
+
+  list.with_item(href: "/a") { "Item A" }
+  list.with_item(href: "/b") { "Item B" }
+  list.with_item(href: "/c") { "Item C" }
 end
 ```
 
-#### View slot
-
-Slots have the capability to render other views, Simply pass the view class name to the `slot` method.
-
-```ruby
-class HeaderComponent < Phlex::HTML
-  def initialize(size:)
-    @size = size
-  end
-
-  def template(&content)
-    h1(class: "text-#{@size}", &content)
-  end
-end
-
-class PostComponent < Phlex::HTML
-  def initialize(featured:)
-    @featured = featured
-  end
-
-  def template(&content)
-    p(class: @featured ? "featured" : nil, &content)
-  end
-end
-
-class BlogComponent < Phlex::HTML
-  include Phlex::Slotable
-
-  slot :header, HeaderComponent
-  slot :post, PostComponent, many: true
-
-  def template
-    if header_slot?
-      div id: "header" do
-        render header_slot
-      end
-    end
-
-    div id: "main" do
-      if post_slots?
-        post_slots.each { render slot }
-
-        span { "Count: #{post_slots.count}" }
-      else
-        span { "No post yet" }
-      end
-    end
-  end
-end
-
-class MyPage < Phlex::HTML
-  def template
-    render BlogComponent.new do |blog|
-      blog.with_header(size: :lg) { "Hello World!" }
-
-      blog.with_post(featured: true) { "Post A" }
-      blog.with_post { "Post B" }
-      blog.with_post { "Post C" }
-    end
-  end
-end
-
-MyPage.new.call
-```
-
-The output:
+Returning:
 
 ```html
 <div id="header">
-  <h1 class="text-lg">Hello World</h1>
+  <h1 class="text-lg text-primary">Hello World!</h1>
+
+  <ul>
+    <li><a href="/a">Item A</a></li>
+    <li><a href="/b">Item B</a></li>
+    <li><a href="/c">Item C</a></li>
+  </ul>
 </div>
-<div id="main">
-  <p class="featured">Post A</p>
-  <p>Post B</p>
-  <p>Post C</p>
-
-  <span>Count: 3</span>
-</div>
 ```
 
-You can pass the class name as a string for cases where the class isn't evaluated yet, such as with inner classes. For example:
-```ruby
-class BlogComponent < Phlex::HTML
-  include Phlex::Slotable
+> [!TIP]
+> You can access the internal component state within lambda slots. For example
+>
+> ```ruby
+> slot :header, ->(&content) { render HeaderComponent.new(featured: @featured), &content }
+>
+> def initialize(featured:)
+>   @featured = feature
+> end
+> ```
 
-  # This will not work
-  slot :header, HeaderComponent #  uninitialized constant BlogComponent::HeaderComponent
-  # You should do this
-  slot :header, "HeaderComponent"
+## Polymorphic slot
 
-  private
-
-  class HeaderComponent < Phlex::HTML
-    # ...
-  end
-end
-```
-
-#### Lambda slots
-Lambda slots are valuable when you prefer not to create another component for straightforward structures or when you need to render another view with specific parameters
-```ruby
-
-class BlogComponent < Phlex::HTML
-  include Phlex::Slotable
-
-  slot :header, ->(size:, &content) { render HeaderComponent.new(size: size, color: "blue"), &content }
-  slot :post, ->(featured:, &content) { span(class: featured ? "featured" : nil, &content) }, many: true
-end
-
-class MyPage < Phlex::HTML
-  def template
-    render BlogComponent.new do |blog|
-      blog.with_header(size: :lg) { "Hello World!" }
-
-      blog.with_post(featured: true) { "Post A" }
-      blog.with_post { "Post B" }
-      blog.with_post { "Post C" }
-    end
-  end
-end
-```
-
-You can access the internal view state within lambda slots. For example:
-```ruby
-class BlogComponent < Phlex::HTML
-  include Phlex::Slotable
-
-  slot :header, ->(size:, &content) { render HeaderComponent.new(size: size, color: @header_color), &content }
-
-  def initialize(header_color:)
-    @header_color = header_color
-  end
-end
-
-class MyPage < Phlex::HTML
-  def template
-    render BlogComponent.new(header_color: "red") do |blog|
-      blog.with_header(size: :lg) { "Hello World!" }
-    end
-  end
-end
-```
-
-#### Polymorphic slots
-Polymorphic slots can render one of several possible slots, allowing for flexibility in component content. This feature is particularly useful when you require a fixed structure but need to accommodate different types of content. To implement this, simply pass a types hash containing the types along with corresponding slot definitions.
+Polymorphic slots can render one of several possible  slots, allowing for flexibility in component content. This feature is  particularly useful when you require a fixed structure but need to  accommodate different types of content. To implement this, simply pass a types hash containing the types along with corresponding slot definitions.
 
 ```ruby
+class IconComponent < Phlex::HTML
+  # omitted code
+end
+
+class ImageComponent < Phlex::HTML
+	# omitted code
+end
+
 class CardComponent < Phlex::HTML
   include Phlex::Slotable
 
@@ -285,73 +303,45 @@ class CardComponent < Phlex::HTML
 
   def template
     if avatar_slot?
-      figure id: "avatar" do
-        render avatar_slot
+      div id: "avatar" do
+	      render avatar_slot
       end
     end
   end
 end
-```
 
-This allows you to set the icon slot using `with_icon_avatar` or the image slot using `with_image_avatar`:
-```ruby
-class UserCardComponent < Phlex::HTML
-  def initialize(user:)
-    @user = user
-  end
+User = Data.define(:image_url)
+user = User.new(image_url: "user.png")
 
-  def template
-    render CardComponent.new do |card|
-      if @user.image?
-        card.with_image_avatar(src: @user.image)
-      else
-        card.with_icon_avatar(name: :user)
-      end
-    end
+CardComponent.new.call do |card|
+  if user.image_url
+    card.with_image_avatar(src: user.image_url)
+  else
+    card.with_icon_avatar(name: :user)
   end
 end
 ```
 
-Please note that you can still utilize the other slot definition APIs:
-```ruby
-class CardComponent < Phlex::HTML
-  include Phlex::Slotable
+Returning:
 
-  slot :avatar, types: {
-    icon: IconComponent,
-    image: "ImageComponent",
-    text: ->(size:, &content) { span(class: "text-#{size}", &content) }
-  }, many: true
-
-  def template
-    if avatar_slots?
-      avatar_slots.each do |slot|
-        render slot
-      end
-    end
-
-    span { "Count: #{avatar_slots.size}" }
-  end
-
-  ...
-end
-
-class UsersCardComponent < Phlex::HTML
-  def template
-    render CardComponent.new do |card|
-      card.with_image_avatar(src: @user.image)
-      card.with_icon_avatar(name: :user)
-      card.with_text_avatar(size: :lg) { "SV" }
-    end
-  end
-end
+```html
+<div id="avatar">
+  <img src="user.png"/>
+</div>
 ```
 
+Note that you need to use `with_{type}_{slot_name}` to set slot content. In the example above, it was used `with_image_avatar` and `with_icon_avatar`.
 
-## Roadmap
-- ✅ ~~Accept Strings as view class name~~
-- ✅ ~~Allow lambda slots~~
-- ✅ ~~Allow polymorphic slots~~
+> [!TIP]
+> You can take advantage of all the previously introduced features, such as lambda slot and slot collection:
+>
+> ```ruby
+> slot :avatar, collection: true, types: {
+>   icon: IconComponent,
+>   image: "ImageComponent",
+>   text: ->(&content) { span(class: "avatar", &content) }
+> }
+> ```
 
 ## Development
 
@@ -361,7 +351,7 @@ To install this gem onto your local machine, run `bundle exec rake install`. To 
 
 ## Contributing
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/stephannv/phlex-slot. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [code of conduct](https://github.com/stephannv/phlex-slotable/blob/master/CODE_OF_CONDUCT.md).
+Bug reports and pull requests are welcome on GitHub at https://github.com/stephannv/phlex-slotable. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [code of conduct](https://github.com/stephannv/phlex-slotable/blob/master/CODE_OF_CONDUCT.md).
 
 ## License
 
