@@ -25,10 +25,10 @@ class Phlex::TestMultiSlotWithLambda < Minitest::Test
   class Blog < Phlex::HTML
     include Phlex::Slotable
 
-    slot :post, ->(featured: false, &content) { p(class: featured ? "featured" : nil, &content) }, many: true
+    slot :post, ->(featured: false, &content) { p(class: featured ? "featured" : nil, &content) }, collection: true
     slot :headline, ->(size:, &content) do
       render HeadlineComponent.new(size: size, bg_color: @headline_bg_color), &content
-    end, many: true
+    end, collection: true
 
     def initialize(headline_bg_color: nil)
       @headline_bg_color = headline_bg_color

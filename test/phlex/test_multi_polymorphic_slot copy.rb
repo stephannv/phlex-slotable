@@ -16,13 +16,13 @@ class Phlex::TestMultiPolymorphicSlot < Minitest::Test
   class UsersList < Phlex::HTML
     include Phlex::Slotable
 
-    slot :avatar, types: {
+    slot :avatar, collection: true, types: {
       image: ImageComponent,
       icon: "IconComponent",
       text: ->(size:, &content) do
         span(class: "text-#{size}", &content)
       end
-    }, many: true
+    }
 
     def template
       if avatar_slots?
