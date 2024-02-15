@@ -85,7 +85,7 @@ Returning:
 
 ```html
 <header>
-	<h1>Hello World!</h1>
+  <h1>Hello World!</h1>
 </header>
 ```
 
@@ -98,7 +98,7 @@ class PageComponent < Phlex::HTML
   slot :title
 
   def template
-		if header_slot?
+    if header_slot?
       header { render title_slot }
     else
       plain "No title"
@@ -113,7 +113,7 @@ A slot collection denotes a slot capable of being rendered multiple times within
 
 ```ruby
 class ListComponent < Phlex::HTML
-	include Phlex::Slotable
+  include Phlex::Slotable
 
   slot :item, collection: true
 end
@@ -123,7 +123,7 @@ To render a collection of slots, iterate over the `{slot_name}_slots` collection
 
 ```ruby
 class ListComponent < Phlex::HTML
-	include Phlex::Slotable
+  include Phlex::Slotable
 
   slot :item, collection: true
 
@@ -210,8 +210,8 @@ Returning:
 
   <ul>
     <li class="active">Item A</li>
-  	<li>Item B</li>
-	  <li>Item C</li>
+    <li>Item B</li>
+    <li>Item C</li>
   </ul>
 </div>
 ```
@@ -235,7 +235,7 @@ class ListComponent < Phlex::HTML
 
   slot :header, ->(size:, &content) do
     render HeaderComponent.new(size: size, color: "primary")
-	end
+  end
   slot :item, ->(href:, &content) { li { a(href: href, &content) } }, collection: true
 
   def template
@@ -293,7 +293,7 @@ class IconComponent < Phlex::HTML
 end
 
 class ImageComponent < Phlex::HTML
-	# omitted code
+  # omitted code
 end
 
 class CardComponent < Phlex::HTML
@@ -304,7 +304,7 @@ class CardComponent < Phlex::HTML
   def template
     if avatar_slot?
       div id: "avatar" do
-	      render avatar_slot
+        render avatar_slot
       end
     end
   end
