@@ -2,7 +2,7 @@
 
 require "test_helper"
 
-class Phlex::TestSingleSlotWithComponent < Minitest::Test
+class Phlex::TestSingleComponentSlot < Minitest::Test
   class HeaderComponent < Phlex::HTML
     def initialize(size:)
       @size = size
@@ -29,7 +29,7 @@ class Phlex::TestSingleSlotWithComponent < Minitest::Test
     end
   end
 
-  def test_slot
+  def test_with_slot
     output = Blog.new.call do |c|
       c.with_header(size: "lg") { "Hello World!" }
     end
@@ -44,7 +44,7 @@ class Phlex::TestSingleSlotWithComponent < Minitest::Test
     HTML
   end
 
-  def test_empty_slot
+  def test_with_no_slot
     output = Blog.new.call
 
     assert_equal output, "<main>My posts</main>"

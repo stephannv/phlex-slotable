@@ -2,7 +2,7 @@
 
 require "test_helper"
 
-class Phlex::TestMultiSlot < Minitest::Test
+class Phlex::TestGenericSlotCollection < Minitest::Test
   class Blog < Phlex::HTML
     include Phlex::Slotable
 
@@ -21,7 +21,7 @@ class Phlex::TestMultiSlot < Minitest::Test
     end
   end
 
-  def test_slots
+  def test_with_slots
     output = Blog.new.call do |c|
       c.with_post do
         c.p { "Post A" }
@@ -47,7 +47,7 @@ class Phlex::TestMultiSlot < Minitest::Test
     HTML
   end
 
-  def test_empty_slots
+  def test_with_no_slots
     output = Blog.new.call
 
     assert_equal output, "<footer>0</footer>"
