@@ -47,7 +47,7 @@ class Phlex::TestSinglePolymorphicSlot < Minitest::Test
     end
   end
 
-  def test_view_slot
+  def test_component_slot
     output = ProfileCard.new.call do |c|
       c.with_image_avatar(src: "user.png")
     end
@@ -62,7 +62,7 @@ class Phlex::TestSinglePolymorphicSlot < Minitest::Test
     HTML
   end
 
-  def test_string_slot
+  def test_component_string_slot
     output = ProfileCard.new.call do |c|
       c.with_icon_avatar(name: "home")
     end
@@ -92,7 +92,7 @@ class Phlex::TestSinglePolymorphicSlot < Minitest::Test
     HTML
   end
 
-  def test_empty_slot
+  def test_with_no_slot
     output = ProfileCard.new.call
 
     assert_equal output, "<span>User name</span>"

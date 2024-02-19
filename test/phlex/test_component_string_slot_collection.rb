@@ -2,7 +2,7 @@
 
 require "test_helper"
 
-class Phlex::TestMultiSlotWithString < Minitest::Test
+class Phlex::TestComponentStringSlotCollection < Minitest::Test
   class Blog < Phlex::HTML
     include Phlex::Slotable
 
@@ -33,7 +33,7 @@ class Phlex::TestMultiSlotWithString < Minitest::Test
     end
   end
 
-  def test_slots
+  def test_with_slots
     output = Blog.new.call do |c|
       c.with_post(featured: true) { "Post A" }
       c.with_post { "Post B" }
@@ -53,7 +53,7 @@ class Phlex::TestMultiSlotWithString < Minitest::Test
     HTML
   end
 
-  def test_empty_slots
+  def test_with_no_slots
     output = Blog.new.call
 
     assert_equal output, "<footer>0</footer>"

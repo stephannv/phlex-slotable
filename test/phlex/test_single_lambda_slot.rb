@@ -2,7 +2,7 @@
 
 require "test_helper"
 
-class Phlex::TestSingleSlotWithLambda < Minitest::Test
+class Phlex::TestSingleLambdaSlot < Minitest::Test
   class SubtitleComponent < Phlex::HTML
     include Phlex::Slotable
 
@@ -44,7 +44,7 @@ class Phlex::TestSingleSlotWithLambda < Minitest::Test
     end
   end
 
-  def test_slot
+  def test_with_slot
     output = Blog.new(subtitle_bg_color: "gray").call do |c|
       c.with_title(size: :lg) { "Hello World!" }
       c.with_subtitle(size: :sm) do |s|
@@ -67,7 +67,7 @@ class Phlex::TestSingleSlotWithLambda < Minitest::Test
     HTML
   end
 
-  def test_empty_slot
+  def test_with_no_slot
     output = Blog.new.call
 
     assert_equal output, <<~HTML.join_lines

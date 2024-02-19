@@ -2,7 +2,7 @@
 
 require "test_helper"
 
-class Phlex::TestMultiPolymorphicSlot < Minitest::Test
+class Phlex::TestPolymorphicSlotCollection < Minitest::Test
   class ImageComponent < Phlex::HTML
     def initialize(src:)
       @src = src
@@ -47,7 +47,7 @@ class Phlex::TestMultiPolymorphicSlot < Minitest::Test
     end
   end
 
-  def test_slots
+  def test_with_slots
     output = UsersList.new.call do |c|
       c.with_image_avatar(src: "user.png")
       c.with_icon_avatar(name: "home")
@@ -73,7 +73,7 @@ class Phlex::TestMultiPolymorphicSlot < Minitest::Test
     HTML
   end
 
-  def test_empty_slots
+  def test_with_no_slots
     output = UsersList.new.call
 
     assert_equal output, "<span>Users: 0</span>"

@@ -2,7 +2,7 @@
 
 require "test_helper"
 
-class Phlex::TestMultiSlotWithLambda < Minitest::Test
+class Phlex::TestLambdaSlotCollection < Minitest::Test
   class HeadlineComponent < Phlex::HTML
     include Phlex::Slotable
 
@@ -50,7 +50,7 @@ class Phlex::TestMultiSlotWithLambda < Minitest::Test
     end
   end
 
-  def test_slots
+  def test_with_slots
     output = Blog.new(headline_bg_color: "blue").call do |c|
       c.with_post(featured: true) { "Post A" }
       c.with_post { "Post B" }
@@ -90,7 +90,7 @@ class Phlex::TestMultiSlotWithLambda < Minitest::Test
     assert_equal expected_html, output
   end
 
-  def test_empty_slots
+  def test_with_no_slots
     output = Blog.new.call
 
     assert_equal output, "<footer>0</footer>"
