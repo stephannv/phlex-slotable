@@ -9,7 +9,7 @@ class DeferredList < Phlex::HTML
     @items = []
   end
 
-  def template
+  def view_template
     if @header
       h1(class: "header", &@header)
     end
@@ -36,7 +36,7 @@ class SlotableList < Phlex::HTML
   slot :header
   slot :item, collection: true
 
-  def template
+  def view_template
     if header_slot
       h1(class: "header", &header_slot)
     end
@@ -50,7 +50,7 @@ class SlotableList < Phlex::HTML
 end
 
 class DeferredListExample < Phlex::HTML
-  def template
+  def view_template
     render DeferredList.new do |list|
       list.header do
         "Header"
@@ -68,7 +68,7 @@ class DeferredListExample < Phlex::HTML
 end
 
 class SlotableListExample < Phlex::HTML
-  def template
+  def view_template
     render SlotableList.new do |list|
       list.with_header do
         "Header"

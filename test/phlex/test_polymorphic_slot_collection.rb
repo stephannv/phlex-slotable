@@ -8,7 +8,7 @@ class Phlex::TestPolymorphicSlotCollection < Minitest::Test
       @src = src
     end
 
-    def template
+    def view_template
       img(class: "image", src: @src)
     end
   end
@@ -24,7 +24,7 @@ class Phlex::TestPolymorphicSlotCollection < Minitest::Test
       end
     }
 
-    def template
+    def view_template
       if avatar_slots?
         div id: "users" do
           avatar_slots.each { |slot| render slot }
@@ -41,7 +41,7 @@ class Phlex::TestPolymorphicSlotCollection < Minitest::Test
         @name = name
       end
 
-      def template
+      def view_template
         i(class: @name)
       end
     end

@@ -8,7 +8,7 @@ class Phlex::TestComponentSlotCollection < Minitest::Test
       @featured = featured
     end
 
-    def template(&content)
+    def view_template(&content)
       p(class: @featured ? "featured" : nil, &content)
     end
   end
@@ -18,7 +18,7 @@ class Phlex::TestComponentSlotCollection < Minitest::Test
 
     slot :post, PostComponent, collection: true
 
-    def template
+    def view_template
       if post_slots?
         main do
           post_slots.each do |slot|

@@ -14,7 +14,7 @@ class Phlex::TestLambdaSlotCollection < Minitest::Test
       @bg_color = bg_color
     end
 
-    def template
+    def view_template
       div class: "headline text-#{@size} bg-#{@bg_color}" do
         render icon_slot
         render title_slot
@@ -34,7 +34,7 @@ class Phlex::TestLambdaSlotCollection < Minitest::Test
       @headline_bg_color = headline_bg_color
     end
 
-    def template
+    def view_template
       if post_slots?
         main do
           headline_slots.each do |slot|
