@@ -14,7 +14,7 @@ class Phlex::TestSingleLambdaSlot < Minitest::Test
       @bg_color = bg_color
     end
 
-    def template(&content)
+    def view_template(&content)
       h3(class: "text-#{@size} bg-#{@bg_color}") do
         render icon_slot
         render content_slot
@@ -34,7 +34,7 @@ class Phlex::TestSingleLambdaSlot < Minitest::Test
       @subtitle_bg_color = subtitle_bg_color
     end
 
-    def template
+    def view_template
       div id: "header" do
         render title_slot if title_slot?
         render subtitle_slot if subtitle_slot?

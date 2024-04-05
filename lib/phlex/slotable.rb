@@ -44,7 +44,7 @@ module Phlex
           RUBY
         end
 
-        class_eval(setter_method, __FILE__, __LINE__ + 1)
+        class_eval(setter_method, __FILE__, __LINE__)
         define_lambda_method(slot_name_with_type, callable) if callable.is_a?(Proc)
       end
 
@@ -70,7 +70,7 @@ module Phlex
           RUBY
         end
 
-        class_eval(getter_method, __FILE__, __LINE__ + 1)
+        class_eval(getter_method, __FILE__, __LINE__)
       end
 
       def define_predicate_method(slot_name, collection:)
@@ -90,7 +90,7 @@ module Phlex
           RUBY
         end
 
-        class_eval(predicate_method, __FILE__, __LINE__ + 1)
+        class_eval(predicate_method, __FILE__, __LINE__)
       end
 
       def callable_value(slot_name, callable)

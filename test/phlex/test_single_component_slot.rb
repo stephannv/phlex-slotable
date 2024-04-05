@@ -8,7 +8,7 @@ class Phlex::TestSingleComponentSlot < Minitest::Test
       @size = size
     end
 
-    def template(&content)
+    def view_template(&content)
       h1(class: "text-#{@size}", &content)
     end
   end
@@ -18,7 +18,7 @@ class Phlex::TestSingleComponentSlot < Minitest::Test
 
     slot :header, HeaderComponent
 
-    def template
+    def view_template
       if header_slot?
         div id: "header" do
           render header_slot if header_slot?

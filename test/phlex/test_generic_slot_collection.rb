@@ -8,7 +8,7 @@ class Phlex::TestGenericSlotCollection < Minitest::Test
 
     slot :post, collection: true
 
-    def template
+    def view_template
       if post_slots?
         main do
           post_slots.each do |slot|

@@ -8,7 +8,7 @@ class Phlex::TestSingleGenericSlot < Minitest::Test
 
     slot :header
 
-    def template
+    def view_template
       if header_slot?
         div id: "header" do
           render header_slot
