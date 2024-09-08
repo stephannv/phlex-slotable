@@ -11,7 +11,7 @@ Gem::Specification.new do |spec|
   spec.summary = "Enable Slot API for Phlex views"
   spec.homepage = "https://github.com/stephannv/phlex-slotable"
   spec.license = "MIT"
-  spec.required_ruby_version = ">= 2.7.0"
+  spec.required_ruby_version = ">= 3.2.0"
 
   # spec.metadata["allowed_push_host"] = "TODO: Set to your gem server 'https://example.com'"
 
@@ -32,7 +32,7 @@ Gem::Specification.new do |spec|
   spec.require_paths = ["lib"]
 
   # Uncomment to register a new dependency of your gem
-  spec.add_dependency "phlex", "~> 1.9"
+  spec.add_dependency "phlex", ">= 1.9", "< 3"
 
   # For more information and examples about making a new gem, check out our
   # guide at: https://bundler.io/guides/creating_gem.html

@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require "phlex"
+require_relative "slotable/version"
 
 module Phlex
   module Slotable
@@ -56,16 +57,14 @@ module Phlex
       def define_getter_method(slot_name, collection:)
         getter_method = if collection
           <<-RUBY
-            def #{slot_name}_slots
-              @#{slot_name}_slots ||= []
-            end
+            def #{slot_name}_slots = @#{slot_name}_slots ||= []
+
             private :#{slot_name}_slots
           RUBY
         else
           <<-RUBY
-            def #{slot_name}_slot
-              @#{slot_name}_slot
-            end
+            def #{slot_name}_slot = @#{slot_name}_slot
+
             private :#{slot_name}_slot
           RUBY
         end
@@ -76,16 +75,14 @@ module Phlex
       def define_predicate_method(slot_name, collection:)
         predicate_method = if collection
           <<-RUBY
-            def #{slot_name}_slots?
-              #{slot_name}_slots.any?
-            end
+            def #{slot_name}_slots? = #{slot_name}_slots.any?
+
             private :#{slot_name}_slots?
           RUBY
         else
           <<-RUBY
-            def #{slot_name}_slot?
-              !#{slot_name}_slot.nil?
-            end
+            def #{slot_name}_slot? = !#{slot_name}_slot.nil?
+
             private :#{slot_name}_slot?
           RUBY
         end

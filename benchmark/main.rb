@@ -2,6 +2,11 @@ require "benchmark"
 require "benchmark/ips"
 require_relative "../lib/phlex/slotable"
 
+require "phlex/version"
+
+puts "Phlex #{Phlex::VERSION}"
+puts "Phlex::Slotable #{Phlex::Slotable::VERSION}"
+
 class DeferredList < Phlex::HTML
   include Phlex::DeferredRender
 

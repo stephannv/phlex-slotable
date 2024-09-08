@@ -13,6 +13,7 @@ Phlex::Slotable enables slots feature to [Phlex](https://www.phlex.fun/) views. 
 - [Component slot](#component-slot)
 - [Lambda slot](#lambda-slot)
 - [Polymorphic slot](#polymorphic-slot)
+- [Performance](#performance)
 - [Development](#development)
 - [Contributing](#contributing)
 
@@ -342,6 +343,29 @@ Note that you need to use `with_{type}_{slot_name}` to set slot content. In the 
 >   text: ->(&content) { span(class: "avatar", &content) }
 > }
 > ```
+
+## Performance
+Using Phlex::Slotable you don't suffer a performance penalty compared to using Phlex::DeferredRender, sometimes it can even be a little faster.
+
+```
+Generated using `ruby benchmark/main.rb`
+
+Phlex 1.11.0
+Phlex::Slotable 0.5.0
+
+ruby 3.3.5 (2024-09-03 revision ef084cc8f4) [arm64-darwin23]
+Warming up --------------------------------------
+            Deferred    22.176k i/100ms
+            Slotable    23.516k i/100ms
+Calculating -------------------------------------
+            Deferred    222.727k (± 0.8%) i/s    (4.49 μs/i) -      1.131M in   5.078157s
+            Slotable    237.405k (± 0.6%) i/s    (4.21 μs/i) -      1.199M in   5.051936s
+
+Comparison:
+            Slotable:   237405.0 i/s
+            Deferred:   222726.8 i/s - 1.07x  slower
+```
+
 
 ## Development
 
