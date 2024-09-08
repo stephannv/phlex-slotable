@@ -1,5 +1,11 @@
 ## [Unreleased]
 
+## [0.5.0] - 2025-09-08
+- Prepare for Phlex 2.0 💪
+- Drop Ruby 2.7, 3.0 and 3.1 support
+- Add Phlex::Kit compatibility tests
+- Make `Phlex::Slotable::VERSION` available by default
+
 ## [0.4.0] - 2024-02-14
 - [BREAKING CHANGE] Rename `many` option to `collection`.
 
