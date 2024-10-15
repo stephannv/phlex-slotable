@@ -5,13 +5,20 @@ require_relative "slotable/version"
 
 module Phlex
   module Slotable
+    module DeferredRender
+      def before_template(&)
+        vanish(&)
+        super
+      end
+    end
+
     def self.included(base)
       base.extend(ClassMethods)
     end
 
     module ClassMethods
       def slot(slot_name, callable = nil, types: nil, collection: false)
-        include Phlex::DeferredRender
+        include DeferredRender
 
         if types
           types.each do |type, callable|
