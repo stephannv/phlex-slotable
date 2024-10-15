@@ -11,7 +11,7 @@ Gem::Specification.new do |spec|
   spec.summary = "Enable Slot API for Phlex views"
   spec.homepage = "https://github.com/stephannv/phlex-slotable"
   spec.license = "MIT"
-  spec.required_ruby_version = ">= 3.2.0"
+  spec.required_ruby_version = ">= 3.3.1"
 
   # spec.metadata["allowed_push_host"] = "TODO: Set to your gem server 'https://example.com'"
 
