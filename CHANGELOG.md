@@ -1,6 +1,7 @@
-## [Unreleased]
+## [1.0.0] - 2025-03-01
+- Reimplement DeferredRender module
 
-## [0.5.0] - 2025-09-08
+## [0.5.0] - 2024-09-08
 - Prepare for Phlex 2.0 💪
 - Drop Ruby 2.7, 3.0 and 3.1 support
 - Add Phlex::Kit compatibility tests

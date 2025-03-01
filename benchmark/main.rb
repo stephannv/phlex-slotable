@@ -1,3 +1,5 @@
+RubyVM::YJIT.enable
+
 require "benchmark"
 require "benchmark/ips"
 require_relative "../lib/phlex/slotable"
@@ -8,7 +10,10 @@ puts "Phlex #{Phlex::VERSION}"
 puts "Phlex::Slotable #{Phlex::Slotable::VERSION}"
 
 class DeferredList < Phlex::HTML
-  include Phlex::DeferredRender
+  def before_template(&)
+    vanish(&)
+    super
+  end
 
   def initialize
     @items = []
