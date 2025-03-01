@@ -1,10 +1,11 @@
 # frozen_string_literal: true
 
 require "phlex"
-require_relative "slotable/version"
 
 module Phlex
   module Slotable
+    autoload :VERSION, "./slotable/version"
+
     module DeferredRender
       def before_template(&)
         vanish(&)
