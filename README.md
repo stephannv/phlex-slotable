@@ -1,6 +1,3 @@
-> [!WARNING]
-> Please note that Phlex::Slotable is currently under development and may undergo changes to its API before reaching the stable release (1.0.0). As a result, there may be breaking changes that affect its usage.
-
 # Phlex::Slotable
 [![CI](https://github.com/stephannv/phlex-slotable/actions/workflows/main.yml/badge.svg)](https://github.com/stephannv/phlex-slotable/actions/workflows/main.yml)
 
