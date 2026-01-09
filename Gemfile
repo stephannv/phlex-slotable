@@ -6,6 +6,6 @@ source "https://rubygems.org"
 gemspec
 
 gem "benchmark-ips", "2.14.0"
-gem "minitest", "5.25.4"
-gem "rake", "13.2.1"
-gem "standard", "1.45.0"
+gem "minitest", "6.0.1"
+gem "rake", "13.3.1"
+gem "standard", "1.52.0"
